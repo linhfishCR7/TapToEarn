@@ -6,10 +6,26 @@
     <title>Tap to Earn</title>
     <style>
         /* Basic styles for the game */
-        body, html { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: Arial, sans-serif; }
-        #game-container { text-align: center; }
-        #score { font-size: 24px; margin-bottom: 20px; }
-        #tap-button { padding: 20px; font-size: 24px; cursor: pointer; }
+        body, html {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            text-align: center;
+        }
+        #score {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #tap-button {
+            padding: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -19,10 +35,32 @@
     </div>
     <script>
         let score = 0;
+        const userId = '5900095158'; // Replace with the actual user ID
+
         document.getElementById('tap-button').addEventListener('click', () => {
             score++;
             document.getElementById('score').innerText = 'Score: ' + score;
+            updateScore(score); // Call the function to update the score on Telegram
         });
+
+        function updateScore(score) {
+            fetch(`https://api.telegram.org/bot7737636412:AAEGyX2RpLp4a1YZbyGnS_PtdrOZE0ikykA/setGameScore`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    score: score,
+                    force: true
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Score updated:", data);
+            })
+            .catch(error => console.error("Error updating score:", error));
+        }
     </script>
 </body>
 </html>
