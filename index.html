@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tap to Earn</title>
     <style>
-        /* Basic styles for the game */
         body, html {
             display: flex;
             justify-content: center;
@@ -40,6 +39,9 @@
     <script>
         let score = 0;
         const userId = '5900095158'; // Replace with the actual user ID
+        const botToken = '7737636412:AAEGyX2RpLp4a1YZbyGnS_PtdrOZE0ikykA'; // Replace with your actual bot token
+        const chatId = '5900095158'; // Replace with the chat ID where the game was played
+        const messageId = '31'; // Replace with the message ID of the game message
 
         document.getElementById('tap-button').addEventListener('click', () => {
             score++;
@@ -48,13 +50,15 @@
         });
 
         function updateScore(score) {
-            fetch(`https://api.telegram.org/bot7737636412:AAEGyX2RpLp4a1YZbyGnS_PtdrOZE0ikykA/setGameScore`, { // Replace YOUR_BOT_TOKEN
+            fetch(`https://api.telegram.org/bot${botToken}/setGameScore`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     user_id: userId,
+                    chat_id: chatId,
+                    message_id: messageId,
                     score: score,
                     force: true
                 })
@@ -62,24 +66,33 @@
             .then(response => response.json())
             .then(data => {
                 console.log("Score updated:", data);
+                if (!data.ok) {
+                    console.error("Error updating score:", data.description);
+                }
             })
             .catch(error => console.error("Error updating score:", error));
         }
 
         function getHighScores() {
-            fetch(`https://api.telegram.org/bot7737636412:AAEGyX2RpLp4a1YZbyGnS_PtdrOZE0ikykA/getGameHighScores`, { // Replace YOUR_BOT_TOKEN
+            fetch(`https://api.telegram.org/bot${botToken}/getGameHighScores`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    user_id: userId // Replace with the actual user ID
+                    user_id: userId,
+                    chat_id: chatId,
+                    message_id: messageId
                 })
             })
             .then(response => response.json())
             .then(data => {
                 console.log("High scores:", data);
-                displayHighScores(data.result); // Call function to display scores
+                if (data.ok) {
+                    displayHighScores(data.result); // Call function to display scores
+                } else {
+                    console.error("Error getting high scores:", data.description);
+                }
             })
             .catch(error => console.error("Error getting high scores:", error));
         }
@@ -87,12 +100,12 @@
         function displayHighScores(scores) {
             const highScoresDiv = document.getElementById('high-scores');
             highScoresDiv.innerHTML = '<h3>High Scores:</h3>';
-            if (scores.length === 0) {
+            if (!scores || scores.length === 0) {
                 highScoresDiv.innerHTML += '<p>No high scores available.</p>';
                 return;
             }
             scores.forEach(score => {
-                highScoresDiv.innerHTML += `<p>User ID: ${score.user_id}, Score: ${score.score}</p>`;
+                highScoresDiv.innerHTML += `<p>User ID: ${score.user.id}, Score: ${score.score}</p>`;
             });
         }
 
