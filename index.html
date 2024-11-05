@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap to Earn</title>
+    <style>
+        /* Basic styles for the game */
+        body, html { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: Arial, sans-serif; }
+        #game-container { text-align: center; }
+        #score { font-size: 24px; margin-bottom: 20px; }
+        #tap-button { padding: 20px; font-size: 24px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="score">Score: 0</div>
+        <button id="tap-button">Tap to Earn</button>
+    </div>
+    <script>
+        let score = 0;
+        document.getElementById('tap-button').addEventListener('click', () => {
+            score++;
+            document.getElementById('score').innerText = 'Score: ' + score;
+        });
+    </script>
+</body>
+</html>
