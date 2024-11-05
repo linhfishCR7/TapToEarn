@@ -26,12 +26,16 @@
             font-size: 24px;
             cursor: pointer;
         }
+        #high-scores {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="score">Score: 0</div>
         <button id="tap-button">Tap to Earn</button>
+        <div id="high-scores"></div> <!-- Div to display high scores -->
     </div>
     <script>
         let score = 0;
@@ -44,7 +48,7 @@
         });
 
         function updateScore(score) {
-            fetch(`https://api.telegram.org/bot7737636412:AAEGyX2RpLp4a1YZbyGnS_PtdrOZE0ikykA/setGameScore`, {
+            fetch(`https://api.telegram.org/bot7737636412:AAEGyX2RpLp4a1YZbyGnS_PtdrOZE0ikykA/setGameScore`, { // Replace YOUR_BOT_TOKEN
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -61,6 +65,39 @@
             })
             .catch(error => console.error("Error updating score:", error));
         }
+
+        function getHighScores() {
+            fetch(`https://api.telegram.org/bot7737636412:AAEGyX2RpLp4a1YZbyGnS_PtdrOZE0ikykA/getGameHighScores`, { // Replace YOUR_BOT_TOKEN
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: userId // Replace with the actual user ID
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("High scores:", data);
+                displayHighScores(data.result); // Call function to display scores
+            })
+            .catch(error => console.error("Error getting high scores:", error));
+        }
+
+        function displayHighScores(scores) {
+            const highScoresDiv = document.getElementById('high-scores');
+            highScoresDiv.innerHTML = '<h3>High Scores:</h3>';
+            if (scores.length === 0) {
+                highScoresDiv.innerHTML += '<p>No high scores available.</p>';
+                return;
+            }
+            scores.forEach(score => {
+                highScoresDiv.innerHTML += `<p>User ID: ${score.user_id}, Score: ${score.score}</p>`;
+            });
+        }
+
+        // Fetch high scores when the page loads
+        getHighScores();
     </script>
 </body>
 </html>
